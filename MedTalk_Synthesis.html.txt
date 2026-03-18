@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MedTalk — Sintesi Congressuale</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0f1f38;
+    --blue:   #1a4a7a;
+    --teal:   #0d7377;
+    --gold:   #c8973a;
+    --cream:  #f5f0e8;
+    --paper:  #faf8f4;
+    --text:   #1a1a2e;
+    --muted:  #6b7a8d;
+    --border: #d4c9b0;
+    --red:    #c0392b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Lato', sans-serif; background: var(--paper); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: var(--navy); padding: 1.4rem 2rem;
+    display: flex; align-items: center; gap: 1.2rem;
+    border-bottom: 3px solid var(--gold);
+  }
+  .logo-mark {
+    width: 44px; height: 44px; border: 2px solid var(--gold); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); flex-shrink: 0;
+  }
+  header h1 { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: #fff; letter-spacing: 0.02em; }
+  header p  { font-size: 0.75rem; color: #8a9bb5; font-style: italic; margin-top: 0.15rem; }
+
+  main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .api-section {
+    background: var(--cream); border: 1px solid var(--border);
+    border-left: 4px solid var(--gold); border-radius: 6px;
+    padding: 1.2rem 1.4rem; margin-bottom: 1.8rem;
+  }
+  .api-section label {
+    display: block; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem;
+  }
+  .api-row { display: flex; gap: 0.6rem; align-items: center; }
+  .api-row input {
+    flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    padding: 0.55rem 0.8rem; border: 1px solid var(--border); border-radius: 4px;
+    background: #fff; color: var(--text); outline: none;
+  }
+  .api-row input:focus { border-color: var(--teal); }
+  .btn-save {
+    padding: 0.55rem 1.1rem; background: var(--teal); color: #fff; border: none;
+    border-radius: 4px; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+    white-space: nowrap; transition: background 0.2s;
+  }
+  .btn-save:hover { background: #0a5c60; }
+  .api-status { font-size: 0.75rem; margin-top: 0.5rem; color: var(--muted); font-style: italic; }
+  .api-status.ok  { color: var(--teal); }
+  .api-status.err { color: var(--red); }
+
+  .context-section { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.8rem; }
+  @media (max-width: 600px) { .context-section { grid-template-columns: 1fr; } }
+  .field label {
+    display: block; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem;
+  }
+  .field input, .field select {
+    width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 4px;
+    background: #fff; font-size: 0.88rem; color: var(--text); font-family: 'Lato', sans-serif; outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--teal); }
+
+  /* Mode tabs */
+  .mode-tabs {
+    display: flex; margin-bottom: 1.2rem;
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+  }
+  .mode-tab {
+    flex: 1; padding: 0.7rem 1rem; text-align: center; font-size: 0.8rem;
+    font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    cursor: pointer; background: var(--cream); color: var(--muted); border: none;
+    border-right: 1px solid var(--border); transition: all 0.2s; font-family: 'Lato', sans-serif;
+  }
+  .mode-tab:last-child { border-right: none; }
+  .mode-tab.active { background: var(--navy); color: var(--gold); }
+  .mode-tab:hover:not(.active) { background: var(--border); color: var(--navy); }
+
+  /* Recorder */
+  .recorder-card {
+    background: var(--navy); border-radius: 10px; padding: 2rem;
+    text-align: center; margin-bottom: 1.8rem; position: relative; overflow: hidden;
+  }
+  .recorder-card::before {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 140px; height: 140px; border-radius: 50%; background: rgba(200,151,58,0.08);
+  }
+  .rec-button {
+    width: 84px; height: 84px; border-radius: 50%; border: 3px solid var(--gold);
+    background: transparent; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; margin: 0 auto 1.2rem; transition: all 0.25s;
+  }
+  .rec-button:hover { background: rgba(200,151,58,0.12); transform: scale(1.05); }
+  .rec-button.recording { border-color: var(--red); animation: pulse-ring 1.5s ease-out infinite; }
+  .rec-button.recording .rec-icon { background: var(--red); }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(192,57,43,0.5); }
+    70%  { box-shadow: 0 0 0 18px rgba(192,57,43,0); }
+    100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+  }
+  .rec-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); transition: all 0.25s; }
+  .rec-button.recording .rec-icon { border-radius: 5px; width: 22px; height: 22px; }
+  .rec-status { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #fff; margin-bottom: 0.4rem; }
+  .rec-timer  { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; color: var(--gold); letter-spacing: 0.06em; margin-bottom: 1rem; }
+  #visualizer { width: 100%; height: 40px; opacity: 0; transition: opacity 0.4s; }
+  #visualizer.active { opacity: 1; }
+  .rec-hint { font-size: 0.75rem; color: #5a6e85; margin-top: 1rem; font-style: italic; }
+
+  /* Upload */
+  .upload-card {
+    background: var(--navy); border-radius: 10px; padding: 2rem;
+    text-align: center; margin-bottom: 1.8rem; position: relative; overflow: hidden; display: none;
+  }
+  .upload-card.visible { display: block; }
+  .upload-card::before {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 140px; height: 140px; border-radius: 50%; background: rgba(200,151,58,0.08);
+  }
+  .upload-zone {
+    border: 2px dashed rgba(200,151,58,0.45); border-radius: 8px;
+    padding: 2.2rem 1.5rem; cursor: pointer; transition: all 0.25s; position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--gold); background: rgba(200,151,58,0.06); }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon  { font-size: 2.6rem; margin-bottom: 0.8rem; display: block; }
+  .upload-label { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #fff; margin-bottom: 0.5rem; }
+  .upload-sub   { font-size: 0.78rem; color: #5a7088; margin-bottom: 0.3rem; }
+  .upload-formats { font-size: 0.7rem; color: #3d5266; font-style: italic; font-family: 'JetBrains Mono', monospace; }
+
+  .upload-selected {
+    margin-top: 1.2rem; background: rgba(13,115,119,0.2);
+    border: 1px solid rgba(13,115,119,0.45); border-radius: 6px;
+    padding: 0.75rem 1rem; display: none; align-items: center; gap: 0.8rem; text-align: left;
+  }
+  .upload-selected.visible { display: flex; }
+  .upload-file-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .upload-file-info { flex: 1; overflow: hidden; }
+  .upload-selected-name {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--gold);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .upload-selected-size { font-size: 0.7rem; color: #5a7088; margin-top: 0.15rem; }
+  .upload-clear {
+    background: none; border: 1px solid rgba(192,57,43,0.4); color: #e87a70;
+    border-radius: 4px; padding: 0.3rem 0.6rem; font-size: 0.72rem; cursor: pointer;
+    flex-shrink: 0; font-family: 'Lato', sans-serif; transition: all 0.2s;
+  }
+  .upload-clear:hover { background: rgba(192,57,43,0.15); border-color: var(--red); }
+
+  .audio-preview { margin-top: 1rem; display: none; }
+  .audio-preview.visible { display: block; }
+  .audio-preview audio { width: 100%; filter: invert(0.85) hue-rotate(180deg); border-radius: 4px; }
+
+  /* Steps */
+  .step-bar { display: flex; margin-bottom: 1.8rem; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .step {
+    flex: 1; padding: 0.6rem 0.5rem; text-align: center; font-size: 0.72rem;
+    font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--muted); background: var(--cream); border-right: 1px solid var(--border); transition: all 0.3s;
+  }
+  .step:last-child { border-right: none; }
+  .step.active { background: var(--teal); color: #fff; }
+  .step.done   { background: var(--navy); color: var(--gold); }
+
+  /* Panels */
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.4rem; overflow: hidden; display: none; }
+  .panel.visible { display: block; }
+  .panel-header {
+    background: var(--cream); border-bottom: 1px solid var(--border);
+    padding: 0.7rem 1.2rem; display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy); }
+  .panel-badge { font-size: 0.65rem; padding: 0.2rem 0.5rem; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; }
+  .badge-whisper { background: #e8f5e9; color: #2e7d32; }
+  .badge-claude  { background: #e3f2fd; color: #1565c0; }
+  .panel-body {
+    padding: 1.2rem 1.4rem; font-size: 0.9rem; line-height: 1.7; color: var(--text);
+    max-height: 320px; overflow-y: auto; white-space: pre-wrap; font-family: 'Lato', sans-serif;
+  }
+  .synthesis-body { font-family: 'Lato', sans-serif; font-size: 0.93rem; line-height: 1.8; padding: 1.4rem 1.8rem; max-height: 520px; overflow-y: auto; }
+  .synthesis-body h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--navy);
+    margin: 1.2rem 0 0.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;
+  }
+  .synthesis-body h2:first-child { margin-top: 0; }
+  .synthesis-body p { margin-bottom: 0.7rem; }
+  .synthesis-body strong { color: var(--blue); }
+
+  /* Buttons */
+  .actions { display: flex; gap: 0.8rem; margin-top: 0.6rem; flex-wrap: wrap; }
+  .btn { padding: 0.65rem 1.3rem; border-radius: 5px; font-size: 0.84rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Lato', sans-serif; letter-spacing: 0.03em; }
+  .btn-primary   { background: var(--teal); color: #fff; }
+  .btn-primary:hover { background: #0a5c60; }
+  .btn-primary:disabled { background: var(--muted); cursor: not-allowed; }
+  .btn-secondary { background: var(--cream); color: var(--navy); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .btn-copy { padding: 0.25rem 0.65rem; font-size: 0.7rem; border: 1px solid var(--border); border-radius: 3px; background: #fff; cursor: pointer; color: var(--muted); transition: all 0.2s; }
+  .btn-copy:hover { border-color: var(--teal); color: var(--teal); }
+
+  #error-toast { display: none; background: #fdecea; border: 1px solid #f5c6cb; border-left: 4px solid var(--red); border-radius: 5px; padding: 0.8rem 1.1rem; font-size: 0.84rem; color: var(--red); margin-bottom: 1.2rem; }
+
+  footer { text-align: center; padding: 1.5rem; font-size: 0.72rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; font-style: italic; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">M</div>
+  <div>
+    <h1>MedTalk Synthesis</h1>
+    <p>Trascrizione &amp; sintesi narrativa di talk congressuali</p>
+  </div>
+</header>
+
+<main>
+
+  <div class="step-bar">
+    <div class="step active" id="step1">① Audio</div>
+    <div class="step" id="step2">② Trascrivi</div>
+    <div class="step" id="step3">③ Sintetizza</div>
+    <div class="step" id="step4">④ Risultato</div>
+  </div>
+
+  <div id="error-toast"></div>
+
+  <div class="api-section">
+    <label>OpenAI API Key (Whisper)</label>
+    <div class="api-row">
+      <input type="password" id="api-key" placeholder="sk-..." autocomplete="off">
+      <button class="btn-save" onclick="saveKey()">Salva</button>
+    </div>
+    <div class="api-status" id="api-status">Inserisci la tua API key per abilitare la trascrizione.</div>
+  </div>
+
+  <div class="context-section">
+    <div class="field">
+      <label>Titolo del talk (opzionale)</label>
+      <input type="text" id="talk-title" placeholder="es. GLP-1RA in HFpEF: nuove evidenze">
+    </div>
+    <div class="field">
+      <label>Lingua del talk</label>
+      <select id="talk-lang">
+        <option value="en">Inglese</option>
+        <option value="it">Italiano</option>
+        <option value="fr">Francese</option>
+        <option value="de">Tedesco</option>
+        <option value="es">Spagnolo</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Mode tabs -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tab-rec"    onclick="switchMode('rec')">🎙 Registra dal vivo</button>
+    <button class="mode-tab"        id="tab-upload" onclick="switchMode('upload')">📂 Carica memo vocale</button>
+  </div>
+
+  <!-- Recorder -->
+  <div class="recorder-card" id="panel-rec">
+    <button class="rec-button" id="rec-btn" onclick="toggleRecording()">
+      <div class="rec-icon" id="rec-icon"></div>
+    </button>
+    <div class="rec-status" id="rec-status">Premi per iniziare a registrare</div>
+    <div class="rec-timer" id="rec-timer">00:00</div>
+    <canvas id="visualizer"></canvas>
+    <p class="rec-hint">Il microfono viene attivato solo durante la registrazione. L'audio non lascia mai il dispositivo finché non premi "Trascrivi".</p>
+  </div>
+
+  <!-- Upload -->
+  <div class="upload-card" id="panel-upload">
+    <div class="upload-zone" id="upload-zone"
+         ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+      <input type="file" id="file-input"
+             accept="audio/*,.m4a,.mp3,.wav,.webm,.ogg,.aac,.flac"
+             onchange="onFileSelected(event)">
+      <span class="upload-icon">🎵</span>
+      <div class="upload-label">Tocca per selezionare il memo vocale</div>
+      <div class="upload-sub">oppure trascina il file qui</div>
+      <div class="upload-formats">.m4a &nbsp;·&nbsp; .mp3 &nbsp;·&nbsp; .wav &nbsp;·&nbsp; .aac &nbsp;·&nbsp; .flac &nbsp;·&nbsp; .webm</div>
+    </div>
+
+    <div class="upload-selected" id="upload-selected">
+      <span class="upload-file-icon">🎧</span>
+      <div class="upload-file-info">
+        <div class="upload-selected-name" id="upload-name"></div>
+        <div class="upload-selected-size" id="upload-size"></div>
+      </div>
+      <button class="upload-clear" onclick="clearFile()">Rimuovi</button>
+    </div>
+
+    <div class="audio-preview" id="audio-preview">
+      <audio id="audio-player" controls></audio>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-primary" id="btn-transcribe" onclick="transcribe()" disabled>
+      Trascrivi con Whisper
+    </button>
+    <button class="btn btn-secondary" onclick="resetAll()">Ricomincia</button>
+  </div>
+
+  <!-- Transcript -->
+  <div class="panel" id="transcript-panel">
+    <div class="panel-header">
+      <span class="panel-title">Trascrizione</span>
+      <div style="display:flex;gap:0.5rem;align-items:center">
+        <span class="panel-badge badge-whisper">Whisper</span>
+        <button class="btn-copy" onclick="copyText('transcript-body')">Copia</button>
+      </div>
+    </div>
+    <div class="panel-body" id="transcript-body"></div>
+    <div style="padding:0.8rem 1.2rem;border-top:1px solid var(--border);">
+      <button class="btn btn-primary" id="btn-synthesize" onclick="synthesize()">
+        Genera sintesi narrativa
+      </button>
+    </div>
+  </div>
+
+  <!-- Synthesis -->
+  <div class="panel" id="synthesis-panel">
+    <div class="panel-header">
+      <span class="panel-title">Sintesi Narrativa Accademica</span>
+      <div style="display:flex;gap:0.5rem;align-items:center">
+        <span class="panel-badge badge-claude">Claude</span>
+        <button class="btn-copy" onclick="copyText('synthesis-body')">Copia</button>
+      </div>
+    </div>
+    <div class="synthesis-body" id="synthesis-body"></div>
+  </div>
+
+</main>
+
+<footer>
+  MedTalk Synthesis · Audio elaborato localmente · Trascrizione via OpenAI Whisper API · Sintesi via Claude API
+</footer>
+
+<script>
+let mediaRecorder = null;
+let audioChunks   = [];
+let audioBlob     = null;
+let uploadedFile  = null;
+let timerInterval = null;
+let seconds       = 0;
+let isRecording   = false;
+let analyser      = null;
+let animFrame     = null;
+let apiKey        = '';
+let currentMode   = 'rec';
+
+// ── Mode switch ────────────────────────────────────────────
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('tab-rec').classList.toggle('active', mode === 'rec');
+  document.getElementById('tab-upload').classList.toggle('active', mode === 'upload');
+  document.getElementById('panel-rec').style.display = mode === 'rec' ? 'block' : 'none';
+  document.getElementById('panel-upload').classList.toggle('visible', mode === 'upload');
+  updateTranscribeBtn();
+}
+
+function updateTranscribeBtn() {
+  const hasAudio = currentMode === 'rec' ? !!audioBlob : !!uploadedFile;
+  document.getElementById('btn-transcribe').disabled = !hasAudio;
+}
+
+// ── API Key ────────────────────────────────────────────────
+function saveKey() {
+  const v = document.getElementById('api-key').value.trim();
+  if (!v.startsWith('sk-')) { setStatus('Formato non valido. La chiave deve iniziare con "sk-".', 'err'); return; }
+  apiKey = v;
+  setStatus('✓ API key salvata per questa sessione.', 'ok');
+  updateTranscribeBtn();
+}
+function setStatus(msg, cls) {
+  const el = document.getElementById('api-status');
+  el.textContent = msg;
+  el.className = 'api-status ' + (cls || '');
+}
+
+// ── File upload ────────────────────────────────────────────
+function onFileSelected(e) { const f = e.target.files[0]; if (f) loadFile(f); }
+function onDragOver(e)  { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
+function onDragLeave(e) { document.getElementById('upload-zone').classList.remove('drag-over'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0]; if (f) loadFile(f);
+}
+
+function loadFile(file) {
+  if (file.size > 25 * 1024 * 1024) { showError('File troppo grande. Whisper accetta file fino a 25 MB.'); return; }
+  uploadedFile = file;
+  hideError();
+  document.getElementById('upload-name').textContent = file.name;
+  document.getElementById('upload-size').textContent = formatSize(file.size) + '  ·  ' + (file.type || 'audio');
+  document.getElementById('upload-selected').classList.add('visible');
+  const url = URL.createObjectURL(file);
+  document.getElementById('audio-player').src = url;
+  document.getElementById('audio-preview').classList.add('visible');
+  updateTranscribeBtn();
+}
+
+function clearFile() {
+  uploadedFile = null;
+  document.getElementById('file-input').value = '';
+  document.getElementById('upload-selected').classList.remove('visible');
+  document.getElementById('audio-preview').classList.remove('visible');
+  document.getElementById('audio-player').src = '';
+  updateTranscribeBtn();
+}
+
+function formatSize(b) {
+  return b < 1048576 ? (b/1024).toFixed(0) + ' KB' : (b/1048576).toFixed(1) + ' MB';
+}
+
+// ── Recording ──────────────────────────────────────────────
+async function toggleRecording() { if (!isRecording) await startRecording(); else stopRecording(); }
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    setupVisualizer(stream);
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = () => { audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); updateTranscribeBtn(); };
+    mediaRecorder.start(200);
+    isRecording = true;
+    document.getElementById('rec-btn').classList.add('recording');
+    document.getElementById('visualizer').classList.add('active');
+    document.getElementById('rec-status').textContent = 'Registrazione in corso…';
+    setStep(1); startTimer();
+  } catch(e) { showError('Impossibile accedere al microfono: ' + e.message); }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  isRecording = false; clearInterval(timerInterval); cancelAnimationFrame(animFrame);
+  document.getElementById('rec-btn').classList.remove('recording');
+  document.getElementById('visualizer').classList.remove('active');
+  document.getElementById('rec-status').textContent = 'Registrazione completata';
+}
+
+function startTimer() {
+  seconds = 0;
+  timerInterval = setInterval(() => {
+    seconds++;
+    document.getElementById('rec-timer').textContent =
+      String(Math.floor(seconds/60)).padStart(2,'0') + ':' + String(seconds%60).padStart(2,'0');
+  }, 1000);
+}
+
+function setupVisualizer(stream) {
+  const ctx = new AudioContext();
+  const src = ctx.createMediaStreamSource(stream);
+  analyser = ctx.createAnalyser(); analyser.fftSize = 64;
+  src.connect(analyser); drawVisualizer();
+}
+
+function drawVisualizer() {
+  const canvas = document.getElementById('visualizer');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width = canvas.offsetWidth, H = canvas.height = 40;
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  function draw() {
+    animFrame = requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(data);
+    ctx.clearRect(0,0,W,H);
+    const bw = W / data.length;
+    data.forEach((v,i) => { const h=(v/255)*H; ctx.fillStyle=`rgba(200,151,58,${0.4+v/400})`; ctx.fillRect(i*bw,H-h,bw-1,h); });
+  }
+  draw();
+}
+
+// ── Transcription ──────────────────────────────────────────
+async function transcribe() {
+  const source = currentMode === 'rec' ? audioBlob : uploadedFile;
+  if (!source) return showError('Nessun audio disponibile.');
+  if (!apiKey)  return showError('Inserisci prima la API key.');
+
+  setStep(2);
+  const btn = document.getElementById('btn-transcribe');
+  btn.innerHTML = '<span class="spinner"></span>Trascrizione in corso…';
+  btn.disabled = true; hideError();
+
+  try {
+    const formData = new FormData();
+    const file = currentMode === 'rec'
+      ? new File([source], 'recording.webm', { type: 'audio/webm' })
+      : uploadedFile;
+    formData.append('file', file);
+    formData.append('model', 'whisper-1');
+    formData.append('language', document.getElementById('talk-lang').value);
+
+    const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + apiKey },
+      body: formData
+    });
+
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || 'Errore API Whisper'); }
+    const data = await res.json();
+    showTranscript(data.text); setStep(3);
+  } catch(e) {
+    showError('Errore trascrizione: ' + e.message);
+    btn.innerHTML = 'Trascrivi con Whisper'; btn.disabled = false;
+  }
+}
+
+function showTranscript(text) {
+  document.getElementById('transcript-body').textContent = text;
+  document.getElementById('transcript-panel').classList.add('visible');
+  document.getElementById('btn-transcribe').innerHTML = '✓ Trascritto';
+}
+
+// ── Synthesis ──────────────────────────────────────────────
+async function synthesize() {
+  const transcript = document.getElementById('transcript-body').textContent.trim();
+  if (!transcript) return showError('Nessuna trascrizione disponibile.');
+  const title = document.getElementById('talk-title').value.trim();
+  const btn = document.getElementById('btn-synthesize');
+  btn.innerHTML = '<span class="spinner"></span>Generazione sintesi…';
+  btn.disabled = true; hideError(); setStep(4);
+
+  const sysPrompt = `Sei un assistente medico-scientifico specializzato in medicina interna, cardiologia e metabolismo. Il tuo compito è produrre una sintesi narrativa accademica di un talk congressuale, in italiano, con registro formale e scientifico.
+
+La sintesi deve essere strutturata nelle seguenti sezioni in prosa discorsiva (NON bullet points):
+1. **Contesto e obiettivo del talk** — inquadra il problema clinico affrontato
+2. **Evidenze presentate** — riassumi i dati chiave, i trial citati, gli outcome discussi con i valori numerici rilevanti
+3. **Messaggi clinici principali** — sintetizza le conclusioni pratiche per il clinico
+4. **Aree di incertezza o dibattito** — segnala eventuali zone grigie o controversie emerse
+
+Usa markdown per le intestazioni (##). Mantieni un tono accademico formale. Cita i trial e gli autori se menzionati nel talk. Non aggiungere informazioni che non provengono dalla trascrizione.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: sysPrompt,
+        messages: [{ role: 'user', content: `Trascrizione del talk${title ? ` "${title}"` : ''}:\n\n${transcript}` }]
+      })
+    });
+    const data = await res.json();
+    renderSynthesis(data.content?.map(b => b.text || '').join('') || '');
+  } catch(e) {
+    showError('Errore sintesi: ' + e.message);
+    btn.innerHTML = 'Genera sintesi narrativa'; btn.disabled = false;
+  }
+}
+
+function renderSynthesis(md) {
+  let html = md
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .split('\n\n').map(p => p.startsWith('<h2>') ? p : `<p>${p.replace(/\n/g,' ')}</p>`).join('');
+  document.getElementById('synthesis-body').innerHTML = html;
+  document.getElementById('synthesis-panel').classList.add('visible');
+  document.getElementById('synthesis-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('btn-synthesize').innerHTML = '✓ Sintesi generata';
+}
+
+// ── Utils ──────────────────────────────────────────────────
+function setStep(n) {
+  for (let i=1; i<=4; i++) {
+    document.getElementById('step'+i).className = 'step' + (i<n?' done':i===n?' active':'');
+  }
+}
+function showError(msg) { const el=document.getElementById('error-toast'); el.textContent='⚠ '+msg; el.style.display='block'; }
+function hideError()    { document.getElementById('error-toast').style.display='none'; }
+function copyText(id)   { navigator.clipboard.writeText(document.getElementById(id).innerText || document.getElementById(id).textContent); }
+
+function resetAll() {
+  if (isRecording) stopRecording();
+  audioBlob=null; audioChunks=[]; uploadedFile=null; seconds=0;
+  document.getElementById('rec-timer').textContent = '00:00';
+  document.getElementById('rec-status').textContent = 'Premi per iniziare a registrare';
+  document.getElementById('btn-transcribe').innerHTML = 'Trascrivi con Whisper';
+  document.getElementById('transcript-panel').classList.remove('visible');
+  document.getElementById('synthesis-panel').classList.remove('visible');
+  document.getElementById('transcript-body').textContent = '';
+  document.getElementById('synthesis-body').innerHTML = '';
+  clearFile(); hideError(); setStep(1);
+}
+</script>
+</body>
+</html>
